@@ -10,11 +10,13 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  await Permission.locationWhenInUse.isDenied.then((valueOfPermission) {
-    if (valueOfPermission) {
-      Permission.locationWhenInUse.request();
-    }
-  });
+  // await Permission.locationWhenInUse.isDenied.then((valueOfPermission) {
+  //   if (valueOfPermission) {
+  //     Permission.locationWhenInUse.request();
+  //   }
+  // });
+
+
 
   runApp(const MyApp());
 }
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
       ),
-      home: LoiginScreen(),
+      home: SignupScreen(),
     );
   }
 }

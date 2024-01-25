@@ -5,7 +5,7 @@ import 'package:kp_driver/authentication/login_screen.dart';
 import 'package:kp_driver/methods/common_methods.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:kp_driver/pages/home.dart';
+import 'package:kp_driver/pages/dashboard.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -20,6 +20,10 @@ class _SignupScreenState extends State<SignupScreen> {
       TextEditingController();
   TextEditingController emailTextEditingController = TextEditingController();
   TextEditingController passwordTextEditingController = TextEditingController();
+  TextEditingController vehicleModelTextEditingController =
+      TextEditingController();
+  TextEditingController vehicleColorEditingController = TextEditingController();
+  TextEditingController vehicleNumberEditingController = TextEditingController();
 
   CommonMethods cMethods = CommonMethods();
 
@@ -39,11 +43,11 @@ class _SignupScreenState extends State<SignupScreen> {
     } else if (passwordTextEditingController.text.trim().length < 5) {
       cMethods.displaySnackBar("passwor must be atleast 6 characters", context);
     } else {
-      registerNewUser();
+      registerNewDriver();
     }
   }
 
-  registerNewUser() async {
+  registerNewDriver() async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -62,10 +66,10 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!context.mounted) return;
     Navigator.pop(context);
 
-    DatabaseReference usersRef =
-        FirebaseDatabase.instance.ref().child("users").child(userFirebase!.uid);
+    DatabaseReference driversRef =
+        FirebaseDatabase.instance.ref().child("drivers").child(userFirebase!.uid);
 
-    Map userDataMap = {
+    Map driverDataMap = {
       "name": userNameTextEditingController.text.trim(),
       "email": emailTextEditingController.text.trim(),
       "phone": userPhoneTextEditingController.text.trim(),
@@ -73,9 +77,9 @@ class _SignupScreenState extends State<SignupScreen> {
       "blockstatus": "no"
     };
 
-    usersRef.set(userDataMap);
+    driversRef.set(driverDataMap);
 
-    Navigator.push(context, MaterialPageRoute(builder: (c) => HomePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (c) => Dashboard()));
   }
 
   @override
@@ -86,12 +90,37 @@ class _SignupScreenState extends State<SignupScreen> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              Image.asset("assets/images/logo.png"),
-              const Text(
-                "create a user\'s Account",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+
+               const SizedBox(
+                      height: 35,
+                    ),
+             
+             const  CircleAvatar(
+                  radius: 86,
+                  backgroundImage: AssetImage("assets/images/avatarman.png"),
               ),
 
+              const SizedBox(
+                      height: 25,
+                    ),
+
+
+             
+              GestureDetector(
+
+                onTap: (){
+
+                },
+                child: const Text(
+                  "Choose image",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(
+                      height: 22,
+                    ),
+
+              
               // text field iput
               Padding(
                 padding: const EdgeInsets.all(22),
@@ -162,6 +191,56 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 22,
                     ),
+                      TextField(
+                      controller: vehicleModelTextEditingController,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                          labelText: "Vehicle model",
+                          labelStyle: TextStyle(
+                            fontSize: 14,
+                          )),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 22,
+                    ),
+                      TextField(
+                      controller: vehicleColorEditingController,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                          labelText: "Vehicle Color",
+                          labelStyle: TextStyle(
+                            fontSize: 14,
+                          )),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 22,
+                    ),
+                      TextField(
+                      controller: vehicleNumberEditingController,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                          labelText: "Vehicle Number",
+                          labelStyle: TextStyle(
+                            fontSize: 14,
+                          )),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 22,
+                    ),
+                    
+
                     ElevatedButton(
                       onPressed: () {
                         checkIfNetworkIsAvailable();

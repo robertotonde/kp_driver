@@ -5,7 +5,7 @@ import 'package:kp_driver/Widgets/loading_dialog.dart';
 import 'package:kp_driver/authentication/signup_screen.dart';
 import 'package:kp_driver/global/global_var.dart';
 import 'package:kp_driver/methods/common_methods.dart';
-import 'package:kp_driver/pages/home.dart';
+import 'package:kp_driver/pages/dashboard.dart';
 
 class LoiginScreen extends StatefulWidget {
   const LoiginScreen({super.key});
@@ -57,22 +57,22 @@ class _LoiginScreenState extends State<LoiginScreen> {
     if (userFirebase != null) {
       DatabaseReference usersRef = FirebaseDatabase.instance
           .ref()
-          .child("users")
+          .child("drivers")
           .child(userFirebase.uid);
       usersRef.once().then((snap) {
         if (snap.snapshot.value != null) {
           if ((snap.snapshot.value as Map)["blockstatus"] == "no") {
-            userName = (snap.snapshot.value as Map)["name"];
+          //  userName = (snap.snapshot.value as Map)["name"];
             Navigator.push(
-                context, MaterialPageRoute(builder: (c) => HomePage()));
+                context, MaterialPageRoute(builder: (c) => Dashboard()));
           } else {
             FirebaseAuth.instance.signOut();
             cMethods.displaySnackBar(
-                "user is blocked :contact admin@gmail.com ", context);
+                "Driver is blocked :contact admin@gmail.com ", context);
           }
         } else {
           FirebaseAuth.instance.signOut();
-          cMethods.displaySnackBar("user does not exist", context);
+          cMethods.displaySnackBar("Driver does not exist", context);
         }
       });
     }
@@ -85,10 +85,19 @@ class _LoiginScreenState extends State<LoiginScreen> {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
+             
             children: [
-              Image.asset("assets/images/logo.png"),
+
+               const SizedBox(
+                      height: 80,
+                    ),
+              Image.asset("assets/images/uberexec.png",width: 220,),
+
+               const SizedBox(
+                      height: 30,
+                    ),
               const Text(
-                "Login as a User",
+                "Login as a Driver",
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
 

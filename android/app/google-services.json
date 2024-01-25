@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "925938415439",
+    "project_id": "kpdriver-9c9a0",
+    "storage_bucket": "kpdriver-9c9a0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925938415439:android:5bbff2435a3468ac93f73a",
+        "android_client_info": {
+          "package_name": "com.example.kp_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXT7G5NJjy0p_ZjO4VxUH0tvQ1t1Rv7eM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
