@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:kp_driver/Widgets/loading_dialog.dart';
 import 'package:kp_driver/authentication/login_screen.dart';
 import 'package:kp_driver/methods/common_methods.dart';
@@ -23,13 +27,43 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController vehicleModelTextEditingController =
       TextEditingController();
   TextEditingController vehicleColorEditingController = TextEditingController();
-  TextEditingController vehicleNumberEditingController = TextEditingController();
+  TextEditingController vehicleNumberEditingController =
+      TextEditingController();
+
+  String urlOfUploadedImage = "";
 
   CommonMethods cMethods = CommonMethods();
 
+  XFile? imageFile;
+
   checkIfNetworkIsAvailable() {
     cMethods.checkConnectivity(context);
-    signUpFormValidation();
+
+    if (imageFile != null) {
+      // uploadImageToStorage();
+      signUpFormValidation();
+    } else {
+      cMethods.displaySnackBar("choose image first", context);
+    }
+    // signUpFormValidation();
+  }
+
+  uploadImageToStorage() async {
+    String imageIdName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference referenceImage =
+        FirebaseStorage.instance.ref().child("Images").child(imageIdName);
+
+    UploadTask uploadTask = referenceImage.putFile(File(imageFile!.path));
+
+    TaskSnapshot snapshot = await uploadTask;
+
+    urlOfUploadedImage = await snapshot.ref.getDownloadURL();
+
+    setState(() {
+      urlOfUploadedImage;
+    });
+
+    // signUpFormValidation();
   }
 
   signUpFormValidation() {
@@ -42,7 +76,15 @@ class _SignupScreenState extends State<SignupScreen> {
       cMethods.displaySnackBar("provide a valid email", context);
     } else if (passwordTextEditingController.text.trim().length < 5) {
       cMethods.displaySnackBar("passwor must be atleast 6 characters", context);
+    } else if (vehicleModelTextEditingController.text.trim().isEmpty) {
+      cMethods.displaySnackBar("please write your car model", context);
+    } else if (vehicleColorEditingController.text.trim().isEmpty) {
+      cMethods.displaySnackBar("please write your car color", context);
+    } else if (passwordTextEditingController.text.isEmpty) {
+      cMethods.displaySnackBar("write your car number", context);
     } else {
+      uploadImageToStorage();
+      
       registerNewDriver();
     }
   }
@@ -66,8 +108,10 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!context.mounted) return;
     Navigator.pop(context);
 
-    DatabaseReference driversRef =
-        FirebaseDatabase.instance.ref().child("drivers").child(userFirebase!.uid);
+    DatabaseReference driversRef = FirebaseDatabase.instance
+        .ref()
+        .child("drivers")
+        .child(userFirebase!.uid);
 
     Map driverDataMap = {
       "name": userNameTextEditingController.text.trim(),
@@ -82,6 +126,17 @@ class _SignupScreenState extends State<SignupScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (c) => Dashboard()));
   }
 
+  chooseImageFromGallery() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = pickedFile;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,26 +145,38 @@ class _SignupScreenState extends State<SignupScreen> {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-
-               const SizedBox(
-                      height: 35,
-                    ),
-             
-             const  CircleAvatar(
-                  radius: 86,
-                  backgroundImage: AssetImage("assets/images/avatarman.png"),
+              const SizedBox(
+                height: 35,
               ),
 
-              const SizedBox(
-                      height: 25,
+              imageFile == null
+                  ? const CircleAvatar(
+                      radius: 86,
+                      backgroundImage:
+                          AssetImage("assets/images/avatarman.png"),
+                    )
+                  : Container(
+                      height: 180,
+                      width: 180,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                        image: DecorationImage(
+                          fit: BoxFit.fitHeight,
+                          image: FileImage(
+                            File(imageFile!.path),
+                          ),
+                        ),
+                      ),
                     ),
 
+              const SizedBox(
+                height: 25,
+              ),
 
-             
               GestureDetector(
-
-                onTap: (){
-
+                onTap: () {
+                  chooseImageFromGallery();
                 },
                 child: const Text(
                   "Choose image",
@@ -117,10 +184,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               const SizedBox(
-                      height: 22,
-                    ),
+                height: 22,
+              ),
 
-              
               // text field iput
               Padding(
                 padding: const EdgeInsets.all(22),
@@ -191,7 +257,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 22,
                     ),
-                      TextField(
+                    TextField(
                       controller: vehicleModelTextEditingController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
@@ -207,7 +273,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 22,
                     ),
-                      TextField(
+                    TextField(
                       controller: vehicleColorEditingController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
@@ -223,7 +289,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 22,
                     ),
-                      TextField(
+                    TextField(
                       controller: vehicleNumberEditingController,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
@@ -239,8 +305,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       height: 22,
                     ),
-                    
-
                     ElevatedButton(
                       onPressed: () {
                         checkIfNetworkIsAvailable();
