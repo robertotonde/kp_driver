@@ -63,6 +63,8 @@ class _SignupScreenState extends State<SignupScreen> {
       urlOfUploadedImage;
     });
 
+    registerNewDriver();
+
     // signUpFormValidation();
   }
 
@@ -84,8 +86,8 @@ class _SignupScreenState extends State<SignupScreen> {
       cMethods.displaySnackBar("write your car number", context);
     } else {
       uploadImageToStorage();
-      
-      registerNewDriver();
+
+      // registerNewDriver();
     }
   }
 
@@ -113,7 +115,15 @@ class _SignupScreenState extends State<SignupScreen> {
         .child("drivers")
         .child(userFirebase!.uid);
 
+    Map driverCarInfo = {
+      "carModel": vehicleModelTextEditingController.text.trim(),
+      "carColor": vehicleColorEditingController.text.trim(),
+      "carNumbe": vehicleNumberEditingController.text.trim(),
+    };
+
     Map driverDataMap = {
+      "photo": urlOfUploadedImage,
+      "car_details": driverCarInfo,
       "name": userNameTextEditingController.text.trim(),
       "email": emailTextEditingController.text.trim(),
       "phone": userPhoneTextEditingController.text.trim(),
